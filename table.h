@@ -13,7 +13,7 @@ struct Table
 };
 
 // void sortTablesByCapacity(struct Table* tables);
-bool tIsFull (struct Table* table);
+// bool tIsFull (struct Table* table);
 unsigned char getSeatsAvailable(struct Table*);
 struct Table* createTable(unsigned char capacity);
 void takeTable(struct Table* table, struct Order* order);

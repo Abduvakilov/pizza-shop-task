@@ -2,7 +2,10 @@
 #define OVEN_H
 #include "order.h"
 
+#define PIZZA_ARRAY_SIZE 500
 #define OVEN_ARRAY_SIZE 20
+
+enum PizzaSize { SMALL, LARGE };
 
 unsigned char ovensCount;
 
@@ -11,12 +14,20 @@ enum OvenStatus { EMPTY, COOKING };
 unsigned char largePizzaCookTime;
 unsigned char smallPizzaCookTime;
 
+struct PizzaOrder
+{
+	enum PizzaSize pizzaSize;
+	struct Order* order;
+	unsigned long cookStartTime;
+	unsigned long readyTime;
+};
+
 struct OvenQueue
 {
-	enum pizzaSizes queue[QUEUE_ARRAY_SIZE];
-	unsigned char front;
-	unsigned char rear;
-	unsigned char itemCount;
+	struct PizzaOrder* pizzaOrder[PIZZA_ARRAY_SIZE];
+	unsigned short front;
+	unsigned short rear;
+	unsigned short itemCount;
 	unsigned short lastPizzaFinishTime;
 };
 
@@ -28,10 +39,11 @@ struct Oven
 
 struct Oven* ovens[OVEN_ARRAY_SIZE];
 
-struct Oven* createOven();
+// struct Oven* createOven();
 void createOvens(int count);
-unsigned short calculateOvenTime(struct Order* order);
-void cook(struct Oven* oven, struct Order* order);
+// unsigned short calculateOvenTime(struct Order* order);
+// void cook(struct Oven* oven, struct Order* order);
 struct Oven* getFistFinishingOven();
+void enqueueOrder(struct Order* order);
 
 #endif

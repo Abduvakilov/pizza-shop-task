@@ -10,9 +10,10 @@ struct Order
 	unsigned char largePizzaQuantity;
 	unsigned char smallPizzaQuantity;
 	// int pizzaQuantityByType[PIZZA_TYPES_COUNT]; // For improvement purposes. To be used when there will be more types of pizzas
-	unsigned long startEatingTime;
+	unsigned long readyTime;
 	struct Table* tableTaken;
 	unsigned char tableOrderId;
+
 };
 
 #endif
