@@ -51,12 +51,6 @@ int oqSize(struct OvenQueue* queue)
    return queue->itemCount;
 }
 
-// unsigned short calculateCookTime(struct Order* order)
-// {
-// 	return order->largePizzaQuantity * largePizzaCookTime +
-// 		   order->smallPizzaQuantity * smallPizzaCookTime;
-// }
-
 void addToOvenQueue(struct OvenQueue* queue, struct Order* order)
 {
    if(oqIsFull(queue))

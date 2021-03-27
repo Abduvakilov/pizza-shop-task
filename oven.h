@@ -23,7 +23,6 @@ struct OvenQueue
 struct Oven
 {
 	enum OvenStatus status;
-	// unsigned long timeFinishesCooking;
 	struct OvenQueue* queue;
 };
 

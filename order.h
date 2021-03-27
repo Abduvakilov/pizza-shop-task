@@ -15,12 +15,4 @@ struct Order
 	unsigned char tableOrderId;
 };
 
-// struct Order* qPeek();
-// bool qIsEmpty();
-// bool qIsFull();
-// int qSize();
-// void enqueue(struct Order* order);
-// struct Order* dequeue();
-// void finishOrder(struct Table* table, struct Order* order);
-
 #endif
