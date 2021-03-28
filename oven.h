@@ -2,7 +2,7 @@
 #define OVEN_H
 #include "order.h"
 
-#define PIZZA_ARRAY_SIZE 1000
+#define PIZZA_ARRAY_SIZE 10000
 #define OVEN_ARRAY_SIZE 20
 
 enum PizzaSize { SMALL, LARGE };

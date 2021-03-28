@@ -26,3 +26,13 @@ unsigned long getTimestampB(struct Order* order)
 {
 	return order->timeReceived * TIMESTAMP_A / TIMESTAMP_B;
 }
+
+void printOrderStatus(unsigned long time)
+{
+    for(int i=0; i<orderHistory.size; i++)
+    {
+        struct Order* order = orderHistory.orders[i];
+        if(order->timeReceived <= time && order->finishTime > time)
+            printf("Order with id: %d created at %lu for %d customers for %d large and %d small pizza(s). Pizzas ready at: %lu; finishes at %lu\n", order->id, order->timeReceived, order->customerCount, order->largePizzaQuantity, order->smallPizzaQuantity, order->pizzasReadyTime, order->finishTime);
+    }
+}

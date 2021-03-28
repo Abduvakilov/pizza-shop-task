@@ -126,7 +126,7 @@ void readSimulationCommands()
         unsigned long time = atoi(secondArg);
         if(strcmp(firstArg, "requests")==0)
         {
-            // getOrderStatus()
+            printOrderStatus(time);
         }
         else if(strcmp(firstArg, "ovens")==0)
         {

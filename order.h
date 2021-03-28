@@ -41,5 +41,6 @@ struct Order* createOrder
 );
 
 unsigned long getTimestampB(struct Order* order);
+void printOrderStatus(unsigned long time);
 
 #endif

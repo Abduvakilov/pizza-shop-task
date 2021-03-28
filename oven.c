@@ -145,7 +145,7 @@ enum OvenStatus getOvenStatus(struct Oven* oven, unsigned long time)
 	for(int i=0; i<count; i++)
 	{
 		if(oven->queue->pizzaOrders[i]->cookStartTime <= time &&
-			oven->queue->pizzaOrders[i]->readyTime < time)
+			oven->queue->pizzaOrders[i]->readyTime > time)
 			return COOKING;
 	}
 	return EMPTY;

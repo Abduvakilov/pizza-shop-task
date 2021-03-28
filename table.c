@@ -23,19 +23,12 @@ unsigned char getSeatsLeft(struct Table* table, unsigned long time)
 {
 	struct Order* orders = *(table->orderList);
 	int customers = 0;
-	printf("Table total orders %d\n", table->totalOrders);
 	for(int i=0; i<(table->totalOrders); i++)
 	{
 		if(orders[i].timeReceived <= time)
-		{
 			customers += orders[i].customerCount;
-			printf("%d\n", orders[i].customerCount);
-		}
 		if(orders[i].finishTime <= time)
-		{
 			customers -= orders[i].customerCount;
-			printf("%d\n", orders[i].customerCount);
-		}
 	}
 	return table->capacity - customers;
 }
