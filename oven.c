@@ -7,8 +7,11 @@
 unsigned char largePizzaCookTime = 4;
 unsigned char smallPizzaCookTime = 6;
 
+const unsigned char largePizzaEatTime = 4;
+const unsigned char smallPizzaEatTime = 6;
 
-unsigned char ovenCount = 0;
+
+unsigned char ovenTotal = 0;
 
 struct Oven* createOven()
 {
@@ -19,14 +22,14 @@ struct Oven* createOven()
 	oven->queue->rear = -1;
 	oven->queue->itemCount = 0;
 	oven->queue->lastPizzaFinishTime = 0;
-	ovens[ovenCount] = oven;
-	ovenCount++;
+	ovens[ovenTotal] = oven;
+	ovenTotal++;
 	return oven;
 }
 
 void createOvens(int count)
 {
-	int ovensToMax = OVEN_ARRAY_SIZE - ovenCount;
+	int ovensToMax = OVEN_ARRAY_SIZE - ovenTotal;
 	count = ovensToMax >  count ? count : ovensToMax;
 	for(int i=0; i < count; i++)
 	{
@@ -74,7 +77,7 @@ unsigned long addToOvenQueue(struct OvenQueue* queue, struct PizzaOrder* pizzaOr
 	  queue->rear = -1;
 	}
 
-	queue->pizzaOrder[++queue->rear] = pizzaOrder;
+	queue->pizzaOrders[++queue->rear] = pizzaOrder;
 	queue->itemCount++;
 	pizzaOrder->cookStartTime = queue->lastPizzaFinishTime;
 	pizzaOrder->readyTime = queue->lastPizzaFinishTime +
@@ -86,10 +89,10 @@ unsigned long addToOvenQueue(struct OvenQueue* queue, struct PizzaOrder* pizzaOr
 struct Oven* getFistFinishingOven()
 {
 	struct Oven* rOven = ovens[0];
-	if (ovenCount == 1)
+	if (ovenTotal == 1)
 		return rOven;
 	unsigned long minFinishTime = rOven->queue->lastPizzaFinishTime;
-	for(int i=1;i<ovenCount;i++)
+	for(int i=1;i<ovenTotal;i++)
 	{
 		struct Oven* oven = ovens[i];
 		if (oven->queue->lastPizzaFinishTime < minFinishTime)
@@ -106,7 +109,13 @@ int getTotalPizzaQuantity(struct Order* order)
 	return order->smallPizzaQuantity + order->largePizzaQuantity;
 }
 
-struct PizzaOrder* ctreatePizzaOrder(int pizzaIndex, struct Order* order)
+int getTotalEatTime(struct Order* order)
+{
+	return (order->smallPizzaQuantity * smallPizzaEatTime +
+		   order->largePizzaQuantity * largePizzaEatTime) / order->customerCount;
+}
+
+struct PizzaOrder* createPizzaOrder(int pizzaIndex, struct Order* order)
 {
 	struct PizzaOrder* pizzaOrder = (struct PizzaOrder*)malloc(sizeof(struct PizzaOrder));
 	pizzaOrder->pizzaSize = pizzaIndex > order->smallPizzaQuantity ? LARGE : SMALL;
@@ -116,14 +125,38 @@ struct PizzaOrder* ctreatePizzaOrder(int pizzaIndex, struct Order* order)
 
 void enqueueOrder(struct Order* order)
 {
-	unsigned long orderReadyTime = 0;
+	int orderPizzasReadyTime = 0;
 	const int total = getTotalPizzaQuantity(order);
 	for(int i=0; i<total; i++)
 	{
 		struct Oven* oven = getFistFinishingOven();
-		struct PizzaOrder* pizzaOrder = ctreatePizzaOrder(i, order);
-		orderReadyTime = addToOvenQueue(oven->queue, pizzaOrder);
+		struct PizzaOrder* pizzaOrder = createPizzaOrder(i, order);
+		orderPizzasReadyTime = addToOvenQueue(oven->queue, pizzaOrder);
 	}
-	order->readyTime = orderReadyTime;
-	printf("Order %d ready time: %lu\n", order->id, order->readyTime);
+	order->pizzasReadyTime = orderPizzasReadyTime;
+	order->finishTime = orderPizzasReadyTime + getTotalEatTime(order);
+	printf("Order %d pizzas will be ready at: %lu\n", order->id, order->pizzasReadyTime);
+	printf("Order %d finishes at: %lu\n", order->id, order->finishTime);
+}
+
+enum OvenStatus getOvenStatus(struct Oven* oven, unsigned long time)
+{
+	int count = oven->queue->itemCount;
+	for(int i=0; i<count; i++)
+	{
+		if(oven->queue->pizzaOrders[i]->cookStartTime <= time &&
+			oven->queue->pizzaOrders[i]->readyTime < time)
+			return COOKING;
+	}
+	return EMPTY;
+}
+
+void printOvensStatus(unsigned long time)
+{
+	for(int i=0; i<ovenTotal; i++)
+	{
+		struct Oven* oven = ovens[i];
+		enum OvenStatus status = getOvenStatus(oven, time);
+		printf("Oven %d: %s\n", i, status ? "COOKING" : "EMPTY");
+	}
 }

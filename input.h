@@ -4,5 +4,6 @@
 
 void readFileAndOrder(FILE* file, bool readFirstLine);
 void readInputAndOrder();
+void readSimulationCommands();
 
 #endif

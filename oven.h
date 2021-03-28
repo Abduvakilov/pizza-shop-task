@@ -2,12 +2,12 @@
 #define OVEN_H
 #include "order.h"
 
-#define PIZZA_ARRAY_SIZE 500
+#define PIZZA_ARRAY_SIZE 1000
 #define OVEN_ARRAY_SIZE 20
 
 enum PizzaSize { SMALL, LARGE };
 
-unsigned char ovenCount;
+unsigned char ovenTotal;
 
 enum OvenStatus { EMPTY, COOKING };
 
@@ -28,7 +28,7 @@ struct OvenQueue
 	unsigned short rear;
 	unsigned short itemCount;
 	unsigned short lastPizzaFinishTime;
-	struct PizzaOrder* pizzaOrder[PIZZA_ARRAY_SIZE];
+	struct PizzaOrder* pizzaOrders[PIZZA_ARRAY_SIZE];
 };
 
 struct Oven
@@ -42,5 +42,6 @@ struct Oven* ovens[OVEN_ARRAY_SIZE];
 void createOvens(int count);
 struct Oven* getFistFinishingOven();
 void enqueueOrder(struct Order* order);
+void printOvensStatus(unsigned long time);
 
 #endif

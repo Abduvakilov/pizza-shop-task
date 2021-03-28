@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "table.h"
 #include "order.h"
 
@@ -9,8 +10,7 @@ struct Table* createTable(unsigned char capacity)
 {
 	struct Table* table = (struct Table*)malloc(sizeof(struct Table));
 	table->capacity = capacity;
-	table->seatsTaken = 0;
-	table->lastOrderId = 0;
+	table->totalOrders = 0;
 
 	maxTablesCapacity = maxTablesCapacity < capacity ? capacity : maxTablesCapacity;
 	tables[tableTotal] = table;
@@ -19,14 +19,30 @@ struct Table* createTable(unsigned char capacity)
 	return table;
 }
 
-bool tIsFull (struct Table* table)
+unsigned char getSeatsLeft(struct Table* table, unsigned long time)
 {
-	return table->seatsTaken == table->capacity;
+	struct Order* orders = *(table->orderList);
+	int customers = 0;
+	printf("Table total orders %d\n", table->totalOrders);
+	for(int i=0; i<(table->totalOrders); i++)
+	{
+		if(orders[i].timeReceived <= time)
+		{
+			customers += orders[i].customerCount;
+			printf("%d\n", orders[i].customerCount);
+		}
+		if(orders[i].finishTime <= time)
+		{
+			customers -= orders[i].customerCount;
+			printf("%d\n", orders[i].customerCount);
+		}
+	}
+	return table->capacity - customers;
 }
 
-unsigned char getSeatsAvailable(struct Table* table)
+bool tIsFull (struct Table* table, unsigned long time)
 {
-	return table->capacity - table->seatsTaken;
+	return getSeatsLeft(table, time) == 0;
 }
 
 struct Table* getMinSeatTable(struct Order* order)
@@ -36,25 +52,38 @@ struct Table* getMinSeatTable(struct Order* order)
 	for(int i=0; i < tableTotal; i++)
 	{
 		struct Table* table = tables[i];
-		int seatsAvailable = getSeatsAvailable(table);
-		if(seatsAvailable < order->customerCount)
+		unsigned char seatsLeft = getSeatsLeft(table, order->timeReceived);
+		if(seatsLeft < order->customerCount)
 			continue;
-		if(seatsAvailable == order->customerCount)
+		if(seatsLeft == order->customerCount)
 			return table;
-		int seatDiff = seatsAvailable - order->customerCount;
-		minSeatDiff = minSeatDiff > seatDiff ? seatDiff : minSeatDiff;
-		rTable = table;
+		int seatDiff = seatsLeft - order->customerCount;
+		if(minSeatDiff > seatDiff)
+		{
+			minSeatDiff = seatDiff;
+			rTable = table;			
+		}
 	}
 	return rTable;
 }
 
 void takeTable(struct Table* table, struct Order* order)
 {
-	if(tIsFull(table))
+	unsigned long time = order->timeReceived;
+	if(tIsFull(table, time))
 		return;
-    table->lastOrderId = (table->lastOrderId + 1)
-              % table->capacity;
-	table->ordersTaken[table->lastOrderId] = order;
-	table->seatsTaken = table->seatsTaken + order->customerCount;
-	order->tableOrderId = table->lastOrderId;
+	table->orderList[table->totalOrders] = order;
+    table->totalOrders = (table->totalOrders + 1) % TABLE_ARRAY_SIZE;
+	order->tableOrderId = table->totalOrders;
+	printf("%d customer(s) sit on %d place table\n", order->customerCount, table->capacity);
+}
+
+void printTablesStatus(unsigned long time)
+{
+	for(int i=0; i<tableTotal; i++)
+	{
+		struct Table* table = tables[i];
+		unsigned char seatsLeft = getSeatsLeft(table, time);
+		printf("Table %d: capacity %d; seats left %d.\n", i, table->capacity, seatsLeft);
+	}
 }

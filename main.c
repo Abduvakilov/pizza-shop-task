@@ -26,6 +26,18 @@ void printInputHelp()
     printf("Enter END to finish\n");
 }
 
+void printSimulationHelp()
+{
+    printf("File loaded.\n");
+    printf("Now, You can get statuses for requests, tables and ovens.\n");
+    printf("Usage examples:\n");
+    printf("	requests TimestampA\n");
+    printf("	tables TimestampB\n");
+    printf("	ovens TimestampB\n");
+    printf("where timestamp is integer\n");
+    printf("Enter END to finish\n");
+}
+
 int main(int argc, char *argv[])
 {
 	bool simulationMode = false;
@@ -100,7 +112,7 @@ int main(int argc, char *argv[])
 
 	createOvens(ovenCountArg);
 
-	printf("%d ovens and %d tables\n", ovenCount, tableTotal);
+	printf("%d ovens and %d tables\n", ovenTotal, tableTotal);
 	// Table and Oven initialization end
 
 	if(simulationMode==true)
@@ -115,11 +127,18 @@ int main(int argc, char *argv[])
 	    printf("Reading file %s\n", filename);
 		readFileAndOrder(file, readFirstLine);
 	    fclose(file);
+
+	    printSimulationHelp();
+	    readSimulationCommands();
+
 	    return 0;
 	}
 
+	printf("\n\n");
 	printInputHelp();
 	readInputAndOrder();
+
+
 
 	return 0;
 }

@@ -21,3 +21,8 @@ struct Order* createOrder(unsigned short id, unsigned long timeReceived, unsigne
 
     return order;
 }
+
+unsigned long getTimestampB(struct Order* order)
+{
+	return order->timeReceived * TIMESTAMP_A / TIMESTAMP_B;
+}
