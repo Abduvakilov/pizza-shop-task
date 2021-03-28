@@ -3,7 +3,7 @@
 #include "order.h"
 
 unsigned char maxTablesCapacity = 1;
-unsigned char tablesCount = 0;
+unsigned char tableCount = 0;
 
 struct Table* createTable(unsigned char capacity)
 {
@@ -14,7 +14,8 @@ struct Table* createTable(unsigned char capacity)
 	table->lastOrderId = -1;
 
 	maxTablesCapacity = maxTablesCapacity < capacity ? capacity : maxTablesCapacity;
-	tablesCount++;
+	tables[tableCount] = table;
+	tableCount++;
 
 	return table;
 }
@@ -33,7 +34,7 @@ struct Table* findMinSeatsTableFor(struct Order* order, struct Table* tables[])
 {
 	unsigned char minSeatDiff = maxTablesCapacity;
 	struct Table* rTable;
-	for(int i=0; i < tablesCount; i++)
+	for(int i=0; i < tableCount; i++)
 	{
 		struct Table* table = tables[i];
 		int seatsAvailable = getSeatsAvailable(table);

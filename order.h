@@ -3,8 +3,11 @@
 #include <stdbool.h>
 #include "table.h"
 
+#define ORDER_HISTORY_SIZE 1000
+
 struct Order
 {
+	unsigned short id;
 	unsigned long timeReceived;
 	unsigned char customerCount; // up to 255
 	unsigned char largePizzaQuantity;
@@ -15,5 +18,22 @@ struct Order
 	unsigned char tableOrderId;
 
 };
+struct OrderHistory
+{
+	unsigned short rear;
+	unsigned short size;
+	struct Order* orders[ORDER_HISTORY_SIZE];
+};
+
+struct OrderHistory orderHistory;
+
+struct Order* createOrder
+(
+	unsigned short id,
+	unsigned long timeReceived,
+	unsigned char customerCount,
+	unsigned char largePizzaQuantity,
+	unsigned char smallPizzaQuantity
+);
 
 #endif
