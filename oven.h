@@ -7,7 +7,7 @@
 
 enum PizzaSize { SMALL, LARGE };
 
-unsigned char ovensCount;
+unsigned char ovenCount;
 
 enum OvenStatus { EMPTY, COOKING };
 
@@ -24,11 +24,11 @@ struct PizzaOrder
 
 struct OvenQueue
 {
-	struct PizzaOrder* pizzaOrder[PIZZA_ARRAY_SIZE];
 	unsigned short front;
 	unsigned short rear;
 	unsigned short itemCount;
 	unsigned short lastPizzaFinishTime;
+	struct PizzaOrder* pizzaOrder[PIZZA_ARRAY_SIZE];
 };
 
 struct Oven
