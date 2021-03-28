@@ -10,8 +10,6 @@
 
 void orderFromInput(unsigned long lineArgs[])
 {
-    for(int i=0; i<ARG_PER_LINE; i++)
-        printf("%lu\n", lineArgs[i]);
     struct Order* order = createOrder(lineArgs[0], lineArgs[1], lineArgs[2], lineArgs[3], lineArgs[4]);
     enqueueOrder(order);
 }
