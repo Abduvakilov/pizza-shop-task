@@ -3,19 +3,18 @@
 #include "order.h"
 
 unsigned char maxTablesCapacity = 1;
-unsigned char tableCount = 0;
+unsigned char tableTotal = 0;
 
 struct Table* createTable(unsigned char capacity)
 {
-	struct Table* table = (struct Table*)malloc(
-        sizeof(struct Table));
+	struct Table* table = (struct Table*)malloc(sizeof(struct Table));
 	table->capacity = capacity;
 	table->seatsTaken = 0;
-	table->lastOrderId = -1;
+	table->lastOrderId = 0;
 
 	maxTablesCapacity = maxTablesCapacity < capacity ? capacity : maxTablesCapacity;
-	tables[tableCount] = table;
-	tableCount++;
+	tables[tableTotal] = table;
+	tableTotal++;
 
 	return table;
 }
@@ -30,11 +29,11 @@ unsigned char getSeatsAvailable(struct Table* table)
 	return table->capacity - table->seatsTaken;
 }
 
-struct Table* findMinSeatsTableFor(struct Order* order, struct Table* tables[])
+struct Table* getMinSeatTable(struct Order* order)
 {
 	unsigned char minSeatDiff = maxTablesCapacity;
 	struct Table* rTable;
-	for(int i=0; i < tableCount; i++)
+	for(int i=0; i < tableTotal; i++)
 	{
 		struct Table* table = tables[i];
 		int seatsAvailable = getSeatsAvailable(table);

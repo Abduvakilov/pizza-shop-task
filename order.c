@@ -16,5 +16,8 @@ struct Order* createOrder(unsigned short id, unsigned long timeReceived, unsigne
 	orderHistory.orders[orderHistory.rear] = order;
     orderHistory.rear = (orderHistory.rear + 1) % ORDER_HISTORY_SIZE;
     orderHistory.size++;
+
+    printf("Order created with id: %d for %d large and %d small pizza(s)\n", order->id, order->largePizzaQuantity, order->smallPizzaQuantity);
+
     return order;
 }

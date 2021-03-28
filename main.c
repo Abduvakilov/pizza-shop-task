@@ -4,99 +4,122 @@
 #include "order.h"
 #include "table.h"
 #include "oven.h"
+#include "input.h"
 
-#define ARG_PER_LINE 5
-#define ARG_SIZE 15
+#define MAX_TABLE_SIZE 31
+
+void printHelp(char argv0[])
+{
+	printf("Usage: %s [filename -r -o N -t S N]\n", argv0);
+	printf("	filename.txt: file directory - the file that contains order list\n");
+	printf("	-r: Reads first line for order details. Off by default.\n");
+	printf("	-o N: Creates Ovens in N quantities, 1 by default.\n");
+	printf("	-t S N: Creates Table in S size and N count.\n");
+	printf("	default: { One table for 8; One table for 20; Four tables, each for 4; Five tables, each for 1 }.\n");
+}
+
+void printInputHelp()
+{
+    printf("Enter order details in the following format\n");
+    printf("Request Index, Issue time, Number of customers in the request, Number of large pizzas, Number of small pizzas\n");
+    printf("One order per line\n");
+    printf("Enter END to finish\n");
+}
 
 int main(int argc, char *argv[])
 {
-	if((argc==2 && strcmp(argv[1], "-h")==0) || argc == 1)
-	{
-		printf("Usage: %s filename [-s -1]\n", argv[0]);
-		printf("	filename.txt: file directory - the file that contains order list\n");
-		printf("	-s: Turns Simulation mode on.\n");
-		printf("	-1: Reads first line for order details. Off by default.\n");
-		return 0;
-	}
 	bool simulationMode = false;
 	bool readFirstLine = false;
-	if(argc==3)
+	char filename[255];
+	unsigned char tableCountArg[MAX_TABLE_SIZE] = { 0 };
+	tableCountArg[8] = 1;
+	tableCountArg[20] = 1;
+	tableCountArg[4] = 4;
+	tableCountArg[1] = 5;
+	unsigned char ovenCountArg = 1;
+	for(int i=1; i<argc; i++)
 	{
-		if(strcmp(argv[2],"-s")==0)
-			simulationMode = true;
-		if(strcmp(argv[2],"-1")==0)
+		char arg[255];
+		strcpy(arg, argv[i]);
+		if(strcmp(arg, "-t") == 0)
+		{
+			if(argc > (i + 2))
+			{
+				printf("Table argument: %s %s\n", argv[i+1], argv[i+2]);
+				unsigned char size = atoi(argv[i+1]);
+				unsigned char count = atoi(argv[i+2]);
+				tableCountArg[size] = count;
+				i=i+2;
+			}
+			else
+			{
+				printHelp(argv[0]);
+				return 1;
+			}
+			continue;
+		}
+		if(strcmp(arg, "-o") == 0)
+		{
+			if(argc>++i)
+				ovenCountArg = atoi(argv[i]);
+			else
+			{
+				printHelp(argv[0]);
+				return 1;
+			}
+			continue;
+		}
+		if(strcmp(arg, "-h") == 0)
+		{
+			printHelp(argv[0]);
+			return 1;
+			continue;
+		}
+		if(strcmp(arg, "-r") == 0)
+		{
 			readFirstLine = true;
-	}
-	else if (argc==4)
-	{
-		if(strcmp(argv[2],"-s")==0 || strcmp(argv[3],"-s")==0)
-			simulationMode = true;
-		if(strcmp(argv[2],"-1")==0 || strcmp(argv[3],"-1")==0)
-			readFirstLine = true;
+			continue;
+		}
+		if(simulationMode == true)
+		{
+			printHelp(argv[0]);
+			return 1;
+		}
+		simulationMode = true;
+		strcpy(filename, arg);
 	}
 	// Command line arguments end
 
-	createTable(4);
-	createTable(4);
-	createTable(8);
-	createTable(8);
+	for(int size=1; size<=MAX_TABLE_SIZE; size++)
+	{
+		unsigned char count = tableCountArg[size];
+		if(count>0)
+			for(int j=0; j<count; j++)
+				createTable(size);
+	}
 
-	createOvens(3);
+	createOvens(ovenCountArg);
 
-	printf("%d ovens and %d tables\n", ovenCount, tableCount);
+	printf("%d ovens and %d tables\n", ovenCount, tableTotal);
 	// Table and Oven initialization end
 
-	FILE* file = fopen( argv[1], "r" );
-
-	if ( file == 0 )
+	if(simulationMode==true)
 	{
-		printf( "Could not open file\n" );
-		return 1;
-	}
-    char x;
-    printf("Reading file %s\n", argv[1]);
-    char lastArg[ARG_SIZE];
-    int lineArgs[ARG_PER_LINE];
-    unsigned short lineNumber = 1;
-    unsigned char argNumber = 0;
-    unsigned char lastArgLen = 0;
+    	FILE* file = fopen(filename, "r" );
 
-    if(!readFirstLine)
-    {
-    	while  ((x = fgetc(file)) != '\n') // Brief description
-    		printf("%c", x);
-	    printf("\n");
+	    if ( file == 0 )
+	    {
+	        printf( "Could not open file: %s\n", filename);
+	        return 1;
+	    }
+	    printf("Reading file %s\n", filename);
+		readFileAndOrder(file, readFirstLine);
+	    fclose(file);
+	    return 0;
 	}
 
-    while  ((x = fgetc(file)) != EOF)
-    {
-        printf("%c", x);
-
-		if(x=='\n' || x==',')
-		{
-			lineArgs[argNumber] = atoi(lastArg);
-			argNumber++;
-			memset(lastArg, 0, ARG_SIZE);
-			lastArgLen = 0;
-		}
-		else
-		{
-			lastArg[lastArgLen] = x;
-			lastArgLen++;
-		}
-
-        if(strcmp(lastArg,"END")==0)
-        	break;
-        if(x=='\n')
-        {
-        	lineNumber++;
-        	argNumber = 0;
-        	struct Order* order = createOrder(lineArgs[0], lineArgs[1], lineArgs[2], lineArgs[3], lineArgs[4]);
-		    printf("order created with id: %d for %d large and %d small pizza(s)", order->id, order->largePizzaQuantity, order->smallPizzaQuantity);
-        	enqueueOrder(order);
-        }
-    }
-    fclose(file);
+	printInputHelp();
+	readInputAndOrder();
 
 	return 0;
 }

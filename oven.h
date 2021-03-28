@@ -39,10 +39,7 @@ struct Oven
 
 struct Oven* ovens[OVEN_ARRAY_SIZE];
 
-// struct Oven* createOven();
 void createOvens(int count);
-// unsigned short calculateOvenTime(struct Order* order);
-// void cook(struct Oven* oven, struct Order* order);
 struct Oven* getFistFinishingOven();
 void enqueueOrder(struct Order* order);
 

@@ -7,7 +7,7 @@
 
 unsigned char maxTablesCapacity;
 struct Table* tables[TABLE_ARRAY_SIZE];
-unsigned char tableCount;
+unsigned char tableTotal;
 
 struct Table
 {
@@ -19,7 +19,8 @@ struct Table
 
 // void sortTablesByCapacity(struct Table* tables);
 // bool tIsFull (struct Table* table);
-unsigned char getSeatsAvailable(struct Table*);
+struct Table* getMinSeatTable(struct Order* order);
+unsigned char getSeatsAvailable(struct Table* table);
 struct Table* createTable(unsigned char capacity);
 void takeTable(struct Table* table, struct Order* order);
 
